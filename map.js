@@ -37,6 +37,14 @@ async function getText(file) {
                 fillOpacity: 0.5,
                 radius: 4
             }).addTo(map);
+            marker.bindPopup(`
+                <h1>${beam["name"]}</h1> 
+                <p class="beam-des">${beam["description"]}</p>
+                Find out more 
+                <a href=${beam["url"]} target="-blank">here</a>.
+            `)
+            .openPopup();
+
         }
     }
 }
@@ -56,10 +64,6 @@ getText("info/beamlines_data.json")
 //     [51.51, -0.047]
 // ]).addTo(map);
 
-var popup = L.popup()
-    .setLatLng([51.513, -0.09])
-    .setContent("I am a standalone popup.")
-    .openOn(map);
 
 // function onMapClick(e) {
 //     alert("You clicked the map at " + e.latlng);
