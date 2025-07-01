@@ -1,4 +1,8 @@
-var map = L.map('map').setView([51.574349, -1.310892], 17);
+//var map = L.map('map').setView([51.574349, -1.310892], 17);
+var map = L.map('map', {
+    center: [51.574349, -1.310892],
+    zoom: 17,
+});
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -14,29 +18,34 @@ L.imageOverlay(image2, imageBounds, {opacity:0.65}).addTo(map);
 
 
 
-let marker = L.marker([51.574349, -1.310892]).addTo(map);
-var circle = L.circle([51.574349, -1.310892], {
-    color: 'red',
-    fillColor: '#f03',
-    fillOpacity: 0.5,
-    radius: 25
-}).addTo(map);
+// let marker = L.marker([51.574349, -1.310892]).addTo(map);
+// var circle = L.circle([51.574349, -1.310892], {
+//     color: 'red',
+//     fillColor: '#f03',
+//     fillOpacity: 0.5,
+//     radius: 25
+// }).addTo(map);
 
 async function getText(file) {
     let filein = await fetch(file);
     let text = await filein.json();
+    let overlayMaps = {}
+
     for (const group of text) {
-        console.log(group)
+        //console.log(group)
         let data = group["beamlines"]
+        var group_layer = L.layerGroup()
+
         for (let beam of data) {
             let pos = beam["position"]
-            let marker = L.marker(pos).addTo(map);
-            var circle = L.circle(pos, {
-                color: 'red',
-                fillColor: '#f03',
-                fillOpacity: 0.5,
-                radius: 4
-            }).addTo(map);
+            let marker = L.marker(pos).addTo(group_layer);
+            // var circle = L.circle(pos, {
+            //     color: 'red',
+            //     fillColor: '#f03',
+            //     fillOpacity: 0.5,
+            //     radius: 4
+            // }).addTo(map);
+
             marker.bindPopup(`
                 <h1>${beam["name"]}</h1> 
                 <p class="beam-des">${beam["description"]}</p>
@@ -45,8 +54,20 @@ async function getText(file) {
             `)
             .openPopup();
 
+            //markers.push(marker)
         }
+        
+        group_layer.addTo(map)
+        
+        overlayMaps[group["name"]] = group_layer
+
+        map["layers"] = group
+
     }
+        
+    var layerControl = L.control.layers(overlayMaps).addTo(map);
+    //layerControl.addBaselay(group_layer, `${group["name"]}`);
+    
 }
 
 getText("info/beamlines_data.json")
