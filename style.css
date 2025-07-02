@@ -4,19 +4,17 @@ p {
 }
 
 para {
-    color:black
+    color:black;
 }
 
 p1 {
-    color:blueviolet
+    color:blueviolet;
 }
 
-#map { height: 600px; }
-
-#image1 { height: 600px; }
-#image2 { height: 600px; }
+#map {
+     height: 97.48vh; 
+}
 
 .beam-des {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    
 }
