@@ -38,7 +38,19 @@ async function getText(file) {
 
         for (let beam of data) {
             let pos = beam["position"]
-            let marker = L.marker(pos).addTo(group_layer);
+            let url = group["markerColour"]
+
+            let newIcon = new L.Icon({
+                iconUrl: url,
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+
+            let marker = L.marker(pos, {icon: newIcon}).addTo(group_layer);
+
             // var circle = L.circle(pos, {
             //     color: 'red',
             //     fillColor: '#f03',
@@ -96,11 +108,11 @@ getText("info/beamlines_data.json")
 
 // var popup = L.popup();
 
-function onMapClick(e) {
-    popup
-        .setLatLng(e.latlng)
-        .setContent("You clicked the map at " + e.latlng.toString())
-        .openOn(map);
-}
+// function onMapClick(e) {
+//     popup
+//         .setLatLng(e.latlng)
+//         .setContent("You clicked the map at " + e.latlng.toString())
+//         .openOn(map);
+// }
 
-map.on('click', onMapClick);
+// map.on('click', onMapClick);
