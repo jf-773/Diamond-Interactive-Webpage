@@ -1,7 +1,7 @@
 //var map = L.map('map').setView([51.574349, -1.310892], 17);
 var map = L.map('map', {
     center: [51.574349, -1.310892],
-    zoom: 17,
+    zoom: 17.4,
 });
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -51,18 +51,29 @@ async function getText(file) {
 
             let marker = L.marker(pos, {icon: newIcon}).addTo(group_layer);
 
+
             // var circle = L.circle(pos, {
             //     color: 'red',
             //     fillColor: '#f03',
             //     fillOpacity: 0.5,
             //     radius: 4
             // }).addTo(map);
-
+            
             marker.bindPopup(`
-                <h1>${beam["name"]}</h1> 
-                <p class="beam-des">${beam["description"]}</p>
-                Find out more 
-                <a href=${beam["url"]} target="-blank">here</a>.
+
+                <div style="background-image: url('${group["icon"]}'); background-size: 30%; background-attachment: fixed; margin: auto;">
+                    <h1>${beam["name"]}</h1> 
+                    <p class="beam-des">${beam["description"]}</p>
+                    Find out more 
+                    <a href=${beam["url"]} target="-blank">here</a>.
+                </div>
+                
+                <style>
+                    .leaflet-popup-content-wrapper{
+                         background-color: #FCFACE;
+                    }
+                </style>
+
             `)
             .openPopup();
 
