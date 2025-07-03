@@ -96,6 +96,38 @@ async function getText(file) {
 getText("info/beamlines_data.json")
 
 
+
+
+map.locate()
+
+function onLocationFound(e) {
+    var radius = e.accuracy;
+    let usericon = new L.Icon({
+        iconUrl: 'https://static.vecteezy.com/system/resources/thumbnails/027/293/544/small_2x/map-pointer-marker-pin-with-a-person-user-icon-people-location-concept-3d-png.png',
+        //shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [41, 41],
+        //iconAnchor: [12, 41],
+        //popupAnchor: [1, -34],
+        //shadowSize: [0, 41],
+        //shadowAnchor: [12, 35]
+    });
+    L.marker(e.latlng, {icon: usericon}).addTo(map)
+        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+    L.circle(e.latlng, radius).addTo(map);
+}
+
+map.on('locationfound', onLocationFound);
+
+function onLocationError(e) {
+    alert(e.message);
+}
+
+map.on('locationerror', onLocationError);
+
+
+
+
 // var polygon = L.polygon([
 //     [51.509, -0.08],
 //     [51.503, -0.06],
