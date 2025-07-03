@@ -40,7 +40,7 @@ async function getText(file) {
 
         for (let beam of data) {
             let pos = beam["position"]
-            beamlinepos[pos] = beam["name"]
+            beamlinepos[beam["name"]] = pos
             let url = group["markerColour"]
 
             let newIcon = new L.Icon({
@@ -100,6 +100,7 @@ getText("info/beamlines_data.json")
 
 
 
+let userpos = [0,0]
 
 map.locate({watch:true})
 
@@ -116,16 +117,24 @@ let usericon = new L.Icon({
 let mark = L.marker([0,0], {icon: usericon}).addTo(map).setZIndexOffset(999999);
 let usercircle = L.circle([0,0], 0).addTo(map);
 
+function modulus([x1, y1], [x2, y2]) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 function onLocationFound(e) {
     var radius = e.accuracy;
     
     mark.setLatLng(e.latlng)
         .bindPopup("You are within " + radius.toPrecision(2) + " meters from this point").openPopup();
-
+    setTimeout(() => {
+        mark.closePopup();
+    }, 2500)
     map.removeLayer(usercircle)
     usercircle = L.circle(e.latlng, radius).addTo(map);
 
-    let userpos = e.latlng
+    userpos = [e.latlng["lat"],e.latlng["lng"]]
 }
 
 map.on('locationfound', onLocationFound);
@@ -137,30 +146,50 @@ function onLocationError(e) {
 map.on('locationerror', onLocationError);
 
 
-let closestbutton = L.control({position:"bottomleft"})
 
-function closestbeamline() {
+
+let closestbutton = L.control({position:"bottomleft"});
+
+let targeticon = new L.Icon({
+                iconUrl: 'https://github.com/pointhi/leaflet-color-markers/blob/master/img/marker-icon-2x-yellow.png?raw=true',
+                //shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                //shadowSize: [41, 41]
+});
+
+let targetmarker = L.marker([0,0])
+
+function closestbeamline(event) {
+    L.DomEvent.stopPropagation(event)
     let distance = 0
     let min = 50000000
     let minpos
-    for (let [beampos, beamname] in beamlinepos) {
-        distance = userpos.distanceTo(beampos)
-        
+    for (let [beamname, beampos] of Object.entries(beamlinepos)) {
+        distance = modulus(userpos,beampos)
         if (distance < min) {
             min = distance
             minpos = beampos
         }
     }
-    popup.setContent("The closest beamline is ${beamlinepos[minpos]}.").openOn(map)
+    
+    targetmarker = L.marker(minpos,{icon:targeticon}).bindPopup("<h3>This is the closest beamline.</h3>").addTo(map);
+    //window.addEventListener("keydown", function() {
+    targetmarker.openPopup()
+    setTimeout(() => {
+        map.removeLayer(targetmarker);
+    }, 3000)
+    //});
 }
 
 closestbutton.onAdd =
     function() {
-        let div = L.DomUtil.create("div")
-        div.innerHTML = "<button>Closest beamline to me</button>"
-        div.firstChild.addEventListener("click", closestbeamline())
+        let div = L.DomUtil.create("div");
+        div.innerHTML = "<button>Closest Beamline to Me</button>";
+        div.firstChild.addEventListener("click", () => closestbeamline(event))
         return div
-    }
+    };
 closestbutton.addTo(map)
 
 
