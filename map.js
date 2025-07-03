@@ -193,6 +193,18 @@ closestbutton.onAdd =
 closestbutton.addTo(map)
 
 
+let zoombutton = L.control({position:"topleft"})
+
+zoombutton.onAdd =
+    function() {
+        let div = L.DomUtil.create("div");
+        div.innerHTML = "<button>Origin</button>";
+        div.firstChild.addEventListener("click", function(){
+            map.setView([51.574349, -1.310892],17.4);
+        })
+        return div
+    };
+zoombutton.addTo(map)
 
 // var polygon = L.polygon([
 //     [51.509, -0.08],
