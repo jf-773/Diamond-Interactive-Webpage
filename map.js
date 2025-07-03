@@ -98,23 +98,29 @@ getText("info/beamlines_data.json")
 
 
 
-map.locate()
+map.locate({watch:true})
+
+let usericon = new L.Icon({
+    iconUrl: 'https://static.vecteezy.com/system/resources/thumbnails/027/293/544/small_2x/map-pointer-marker-pin-with-a-person-user-icon-people-location-concept-3d-png.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [41, 41],
+    iconAnchor: [20.5,38],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+    shadowAnchor: [10, 39]
+});
+
+let mark = L.marker([0,0], {icon: usericon}).addTo(map).setZIndexOffset(999999);
+let usercircle = L.circle([0,0], 0).addTo(map);
 
 function onLocationFound(e) {
     var radius = e.accuracy;
-    let usericon = new L.Icon({
-        iconUrl: 'https://static.vecteezy.com/system/resources/thumbnails/027/293/544/small_2x/map-pointer-marker-pin-with-a-person-user-icon-people-location-concept-3d-png.png',
-        //shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [41, 41],
-        //iconAnchor: [12, 41],
-        //popupAnchor: [1, -34],
-        //shadowSize: [0, 41],
-        //shadowAnchor: [12, 35]
-    });
-    L.marker(e.latlng, {icon: usericon}).addTo(map)
-        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+    
+    mark.setLatLng(e.latlng)
+        .bindPopup("You are within " + radius.toPrecision(2) + " meters from this point").openPopup();
 
-    L.circle(e.latlng, radius).addTo(map);
+    map.removeLayer(usercircle)
+    usercircle = L.circle(e.latlng, radius).addTo(map);
 }
 
 map.on('locationfound', onLocationFound);
