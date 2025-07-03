@@ -26,6 +26,8 @@ L.imageOverlay(image2, imageBounds, {opacity:0.65}).addTo(map);
 //     radius: 25
 // }).addTo(map);
 
+let beamlinepos = {}
+
 async function getText(file) {
     let filein = await fetch(file);
     let text = await filein.json();
@@ -38,6 +40,7 @@ async function getText(file) {
 
         for (let beam of data) {
             let pos = beam["position"]
+            beamlinepos[pos] = beam["name"]
             let url = group["markerColour"]
 
             let newIcon = new L.Icon({
@@ -121,6 +124,8 @@ function onLocationFound(e) {
 
     map.removeLayer(usercircle)
     usercircle = L.circle(e.latlng, radius).addTo(map);
+
+    let userpos = e.latlng
 }
 
 map.on('locationfound', onLocationFound);
@@ -131,6 +136,32 @@ function onLocationError(e) {
 
 map.on('locationerror', onLocationError);
 
+
+let closestbutton = L.control({position:"bottomleft"})
+
+function closestbeamline() {
+    let distance = 0
+    let min = 50000000
+    let minpos
+    for (let [beampos, beamname] in beamlinepos) {
+        distance = userpos.distanceTo(beampos)
+        
+        if (distance < min) {
+            min = distance
+            minpos = beampos
+        }
+    }
+    popup.setContent("The closest beamline is ${beamlinepos[minpos]}.").openOn(map)
+}
+
+closestbutton.onAdd =
+    function() {
+        let div = L.DomUtil.create("div")
+        div.innerHTML = "<button>Closest beamline to me</button>"
+        div.firstChild.addEventListener("click", closestbeamline())
+        return div
+    }
+closestbutton.addTo(map)
 
 
 
