@@ -73,7 +73,7 @@ async function getText(file) {
                 
                 <style>
                     .leaflet-popup-content-wrapper{
-                         background-color: #FCFACE;
+                         background-color:rgb(222,222,222);
                     }
                 </style>
 
