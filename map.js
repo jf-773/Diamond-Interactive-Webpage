@@ -91,7 +91,7 @@ async function getText(file) {
 
     }
         
-    var layerControl = L.control.layers(overlayMaps).addTo(map);
+    var layerControl = L.control.layers(null, overlayMaps).addTo(map);
     //layerControl.addBaselay(group_layer, `${group["name"]}`);
     
 }
@@ -123,13 +123,21 @@ function modulus([x1, y1], [x2, y2]) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+let rest = true
+
 function onLocationFound(e) {
     var radius = e.accuracy;
     
-    mark.setLatLng(e.latlng)
-        .bindPopup("You are within " + radius.toPrecision(2) + " meters from this point").openPopup();
+    mark.setLatLng(e.latlng);
+
+    if (rest){
+        mark.bindPopup("You are within " + radius.toPrecision(2) + " meters from this point").openPopup();
+    }
+        
+    rest = false
     setTimeout(() => {
         mark.closePopup();
+        rest = true;
     }, 2500)
     map.removeLayer(usercircle)
     usercircle = L.circle(e.latlng, radius).addTo(map);
@@ -148,7 +156,7 @@ map.on('locationerror', onLocationError);
 
 
 
-let closestbutton = L.control({position:"bottomleft"});
+let closestbutton = L.control({position:"topright"});
 
 let targeticon = new L.Icon({
                 iconUrl: 'https://github.com/pointhi/leaflet-color-markers/blob/master/img/marker-icon-2x-yellow.png?raw=true',
@@ -198,9 +206,9 @@ let zoombutton = L.control({position:"topleft"})
 zoombutton.onAdd =
     function() {
         let div = L.DomUtil.create("div");
-        div.innerHTML = "<button>Origin</button>";
+        div.innerHTML = "<button>Zoom Back</button>";
         div.firstChild.addEventListener("click", function(){
-            map.setView([51.574349, -1.310892],17.4);
+            map.setView(userpos,17.4);
         })
         return div
     };
