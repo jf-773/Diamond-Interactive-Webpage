@@ -201,6 +201,20 @@ closestbutton.onAdd =
 closestbutton.addTo(map)
 
 
+let focusb = L.control({position:"topleft"})
+
+focusb.onAdd =
+    function() {
+        let div = L.DomUtil.create("div");
+        div.innerHTML = "<button>Focus</button>";
+        div.firstChild.addEventListener("click", function(){
+            map.setView(userpos,17.4);
+        })
+        return div
+    };
+focusb.addTo(map)
+
+
 let zoombutton = L.control({position:"topleft"})
 
 zoombutton.onAdd =
@@ -208,11 +222,12 @@ zoombutton.onAdd =
         let div = L.DomUtil.create("div");
         div.innerHTML = "<button>Zoom Back</button>";
         div.firstChild.addEventListener("click", function(){
-            map.setView(userpos,17.4);
+            map.setView([51.574349, -1.310892],17.4);
         })
         return div
     };
 zoombutton.addTo(map)
+
 
 // var polygon = L.polygon([
 //     [51.509, -0.08],
